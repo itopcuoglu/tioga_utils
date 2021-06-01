@@ -177,6 +177,7 @@ void write_mesh(
 int main(int argc, char** argv)
 {
   stk::ParallelMachine comm = stk::parallel_machine_init(&argc, &argv);
+  Kokkos::initialize(argc, argv);
 
   {
       auto timerTotal = tioga_nalu::get_timer("stk2tioga::zz_total_time");

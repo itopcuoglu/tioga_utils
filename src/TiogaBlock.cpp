@@ -172,8 +172,6 @@ TiogaBlock::update_iblanks()
   using CounterType = Kokkos::Sum<ngp::ArrayInt3>;
   typename CounterType::value_type counter;
   CounterType ngp_counter(counter);
-  // TODO: move to device view
-  bdata_.iblank_.sync_to_device();
   auto& iblarr = bdata_.iblank_.d_view;
   auto& nidmap = bdata_.eid_map_.d_view;
   auto& iblank_ngp = stk::mesh::get_updated_ngp_field<double>(*ibf);
@@ -219,8 +217,6 @@ void TiogaBlock::update_iblank_cell()
     stk::mesh::selectUnion(blkParts_);
 
   using Traits = ngp::NGPMeshTraits<>;
-  // TODO: move to device view
-  bdata_.iblank_cell_.sync_to_device();
   auto& iblarr = bdata_.iblank_cell_.d_view;
   auto& eidmap = bdata_.eid_map_.d_view;
   auto& iblank_ngp = stk::mesh::get_updated_ngp_field<double>(*ibf);

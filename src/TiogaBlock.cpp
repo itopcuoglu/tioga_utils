@@ -176,7 +176,7 @@ TiogaBlock::update_iblanks()
   auto& nidmap = bdata_.eid_map_.d_view;
   auto& iblank_ngp = stk::mesh::get_updated_ngp_field<double>(*ibf);
   ngp::run_entity_par_reduce(
-      "update_iblanks", bulk_.get_updated_ngp_mesh(),
+      "update_iblanks", stk::mesh::get_updated_ngp_mesh(bulk_),
       stk::topology::NODE_RANK, mesh_selector,
       KOKKOS_LAMBDA(
           const typename Traits::MeshIndex& mi,
@@ -221,7 +221,7 @@ void TiogaBlock::update_iblank_cell()
   auto& eidmap = bdata_.eid_map_.d_view;
   auto& iblank_ngp = stk::mesh::get_updated_ngp_field<double>(*ibf);
   ngp::run_entity_algorithm(
-      "update_iblanks", bulk_.get_updated_ngp_mesh(),
+      "update_iblanks", stk::mesh::get_updated_ngp_mesh(bulk_),
       stk::topology::ELEM_RANK, mesh_selector,
       KOKKOS_LAMBDA(const typename Traits::MeshIndex& mi) {
           auto elem = (*mi.bucket)[mi.bucketOrd];
@@ -781,8 +781,7 @@ double TiogaBlock::update_solution(const int nvars)
     if (num_nodes_ < 1) return rnorm;
     auto tmon = get_timer("TiogaBlock::update_solution");
 
-    // TODO: sync to host after uppdating TIOGA to update solution on device
-    // bdata_.qsol_.sync_to_host();
+    bdata_.qsol_.sync_to_host();
 
     auto& qsolarr = bdata_.qsol_.h_view;
     auto* qvars = meta_.get_field<GenericFieldType>(

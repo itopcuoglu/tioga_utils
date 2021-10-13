@@ -20,7 +20,7 @@ public:
         stk::mesh::BulkData&,
         const YAML::Node&);
 
-    ~MeshMotion() {}
+    virtual ~MeshMotion() {}
 
     virtual void setup();
 

@@ -10,7 +10,7 @@ set(TU_CUDA_SM "70" CACHE STRING "CUDA arch option")
 
 if (TU_ENABLE_CUDA)
   enable_language(CUDA)
-  set(CMAKE_CUDA_STANDARD 11)
+  set(CMAKE_CUDA_STANDARD 17)
   set(CMAKE_CUDA_STANDARD_REQUIRED ON)
   set(CMAKE_CUDA_EXTENSIONS OFF)
   if (CMAKE_CUDA_COMPILER_VERSION VERSION_LESS "9.0")
@@ -26,7 +26,7 @@ endif()
 
 find_package(MPI REQUIRED)
 
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_CXX_STANDARD_REQUIRED)
 
@@ -44,12 +44,5 @@ if (ENABLE_NALU_WIND)
   find_path(NALU_INCLUDES Realm.h PATHS ${NALU_DIR}/include)
 endif()
 
-add_library(tioga_stk OBJECT)
-add_executable(stk2tioga)
-
-if (ENABLE_AMR_WIND)
-  add_library(tioga_amr OBJECT)
-  add_executable(exatioga)
-endif()
-
 add_subdirectory(src)
+

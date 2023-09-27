@@ -1,4 +1,12 @@
-target_compile_features(tioga_stk PRIVATE cxx_std_11)
+add_library(tioga_stk OBJECT)
+add_executable(stk2tioga)
+
+if (ENABLE_AMR_WIND)
+  add_library(tioga_amr OBJECT)
+  add_executable(exatioga)
+endif()
+
+target_compile_features(tioga_stk PRIVATE cxx_std_17)
 set_target_properties(tioga_stk PROPERTIES CXX_EXTENSIONS OFF)
 target_include_directories(tioga_stk
   SYSTEM PUBLIC
@@ -35,6 +43,7 @@ target_sources(tioga_stk PRIVATE
   Timer.cpp
   )
 
+target_compile_features(stk2tioga PRIVATE cxx_std_17)
 target_sources(stk2tioga PRIVATE stk2tioga.cpp)
 target_link_libraries(stk2tioga PUBLIC tioga_stk)
 
@@ -65,8 +74,16 @@ if (ENABLE_AMR_WIND)
     target_compile_options(tioga_amr PUBLIC $<$<COMPILE_LANGUAGE:CXX>:--expt-relaxed-constexpr>)
   endif()
 
+  target_compile_features(exatioga PRIVATE cxx_std_17)
   target_sources(exatioga PRIVATE
     ExaTioga.cpp
     exatioga_main.cpp)
   target_link_libraries(exatioga PUBLIC tioga_stk tioga_amr)
+endif()
+
+
+if(ENABLE_AMR_WIND)
+  install(TARGETS exatioga stk2tioga)
+else()
+  install(TARGETS stk2tioga)
 endif()

@@ -7,6 +7,7 @@
 #include "stk_util/parallel/ParallelReduce.hpp"
 #include "stk_mesh/base/FieldParallel.hpp"
 #include "stk_mesh/base/FieldBLAS.hpp"
+#include "stk_mesh/base/GetNgpMesh.hpp"
 
 #include <numeric>
 #include <iostream>
@@ -14,10 +15,7 @@
 
 #include "TiogaMeshInfo.h"
 #include "tioga.h"
-
-extern "C" {
-double computeCellVolume(double xv[8][3],int nvert);
-}
+#include "tioga_math.h"
 
 namespace tioga_nalu {
 namespace {
@@ -163,6 +161,7 @@ TiogaBlock::update_iblanks()
 {
   ScalarFieldType* ibf =
     meta_.get_field<ScalarFieldType>(stk::topology::NODE_RANK, "iblank");
+  ibf->sync_to_device();
   auto timeMon = get_timer("TiogaBlock::update_iblanks");
 
   stk::mesh::Selector mesh_selector = stk::mesh::selectUnion(blkParts_)

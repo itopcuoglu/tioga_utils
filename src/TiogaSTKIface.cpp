@@ -478,6 +478,7 @@ void TiogaSTKIface::update_solution(const int nvars)
     auto tmon = get_timer("TiogaSTKIface::update_solution");
     double maxNorm = -1.0e20;
     double g_maxNorm = -1.0e20;
+    double err_tol = 1.0e-12;
     for (auto& tb: blocks_)
     {
         double norm = tb->update_solution(nvars);
@@ -486,8 +487,14 @@ void TiogaSTKIface::update_solution(const int nvars)
 
     stk::all_reduce_max(bulk_.parallel(), &maxNorm, &g_maxNorm, 1);
     if (bulk_.parallel_rank() == 0)
+    {
         std::cout << "TIOGA interpolation error (max L2 norm) for STK mesh: "
                   << g_maxNorm << std::endl;
+
+	if(g_maxNorm>=err_tol){
+	throw std::runtime_error("TIOGA interpolation error for STK mesh is above the set tolerance. Aborting exatioga");
+	}
+    }
 }
 
 }  // tioga

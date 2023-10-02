@@ -300,7 +300,6 @@ void TiogaAMRIface::update_solution()
 
     amrex::Real rnorm = 0.0;
     amrex::Real err_tol = 1.0e-12;
-    const int iproc = amrex::ParallelDescriptor::MyProc();
     int counter = 0;
     for (int lev=0; lev < nlevels; ++lev) {
         if (m_ncell_vars > 0) {
@@ -352,7 +351,7 @@ void TiogaAMRIface::update_solution()
     amrex::Print() << "TIOGA interpolation error (max L2 norm) for AMR mesh: "
                    << rnorm << std::endl;
 
-    if(iproc==0){
+    if(amrex::ParallelDescriptor::IOProcessor()){
 	if(rnorm>=err_tol){
 	throw std::runtime_error("TIOGA interpolation error for AMR mesh is above the set tolerance. Aborting exatioga");
 	}

@@ -27,12 +27,9 @@ public:
      *  Interface is the same as amrex::AmrCore::ErrorEst
      */
     virtual void operator()(
-        int level,
-        amrex::TagBoxArray& tags,
-        amrex::Real time,
-        int ngrow) = 0;
+        int level, amrex::TagBoxArray& tags, amrex::Real time, int ngrow) = 0;
 };
 
-}
+} // namespace tioga_amr
 
 #endif /* REFINEMENTCRITERIA_H */

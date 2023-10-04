@@ -10,10 +10,7 @@ namespace tioga_nalu {
 class MeshRotation : public MotionBase
 {
 public:
-    MeshRotation(
-        stk::mesh::MetaData&,
-        stk::mesh::BulkData&,
-        const YAML::Node&);
+    MeshRotation(stk::mesh::MetaData&, stk::mesh::BulkData&, const YAML::Node&);
 
     virtual ~MeshRotation() {}
 
@@ -36,7 +33,6 @@ private:
     double omega_{0.0};
 };
 
-
-} // tioga_nalu
+} // namespace tioga_nalu
 
 #endif /* MESHROTATION_H */

@@ -22,10 +22,14 @@ public:
     virtual void initialize(const amrex::AmrCore&, const YAML::Node&) override;
 
     virtual void
-    operator()(int level, amrex::TagBoxArray& tags, amrex::Real time, int ngrow) override;
+    operator()(int level, amrex::TagBoxArray& tags, amrex::Real time, int ngrow)
+        override;
 
     //! Vector of boxarrays that define refinement zones at each level
-    const amrex::Vector<amrex::BoxArray>& boxarray_vec() const { return m_boxarrays; }
+    const amrex::Vector<amrex::BoxArray>& boxarray_vec() const
+    {
+        return m_boxarrays;
+    }
 
 protected:
     //! Domain bounding boxes where refinement is performed at each level
@@ -38,6 +42,6 @@ protected:
     int m_nlevels{-1};
 };
 
-}
+} // namespace tioga_amr
 
 #endif /* CARTBOXREFINEMENT_H */

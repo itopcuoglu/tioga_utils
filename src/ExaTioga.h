@@ -45,6 +45,6 @@ private:
     int m_output_freq{1};
 };
 
-}
+} // namespace tioga_amr
 
 #endif /* EXATIOGA_H */

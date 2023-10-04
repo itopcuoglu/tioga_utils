@@ -13,13 +13,14 @@ class Node;
 namespace TIOGA {
 class tioga;
 struct AMRMeshInfo;
-}
+} // namespace TIOGA
 
 namespace tioga_amr {
 
 struct NgpAMRInfo
 {
-    template <typename T> using AType = NgpAmrDualArray<T>;
+    template <typename T>
+    using AType = NgpAmrDualArray<T>;
 
     NgpAMRInfo(const int nglobal, const int nlocal);
 
@@ -52,13 +53,13 @@ public:
 
     void initialize();
 
-    void register_mesh(TIOGA::tioga&, const bool verbose=false);
+    void register_mesh(TIOGA::tioga&, const bool verbose = false);
 
     void register_solution(TIOGA::tioga&);
 
     void update_solution();
 
-    void write_outputs(const int time_index=0, const double time=0.0);
+    void write_outputs(const int time_index = 0, const double time = 0.0);
 
     int num_total_vars() const { return m_ncell_vars + m_nnode_vars; }
 
@@ -94,6 +95,6 @@ private:
     int m_nnode_vars{0};
 };
 
-}
+} // namespace tioga_amr
 
 #endif /* TIOGAAMRIFACE_H */

@@ -63,7 +63,7 @@ void ExaTioga::execute(const YAML::Node& doc)
     print_memory_diag(m_comm);
 
     size_t ofileID;
-    if(m_do_write) {
+    if (m_do_write) {
         m_amr.write_outputs(0, m_stk.current_time());
         ofileID = m_stk.write_outputs(doc["nalu_wind"], m_stk.current_time());
     }
@@ -76,21 +76,22 @@ void ExaTioga::run_timesteps(size_t ofileID)
     auto tmon = tioga_nalu::get_timer("ExaTioga::run_timesteps");
     const int nsteps = m_stk.num_timesteps();
     amrex::Print() << "Executing mesh motion for " << nsteps << " steps"
-                   << std::endl << std::endl;
-    for (int nt=0; nt < nsteps; ++nt) {
+                   << std::endl
+                   << std::endl;
+    for (int nt = 0; nt < nsteps; ++nt) {
         m_stk.move_mesh(nt);
 
         amrex::Print()
             << "------------------------------------------------------------\n"
-            << "Timestep / time = " << (nt + 1) << "; "
-            << m_stk.current_time() << " s" << std::endl;
+            << "Timestep / time = " << (nt + 1) << "; " << m_stk.current_time()
+            << " s" << std::endl;
         perform_connectivity();
         exchange_solution();
         print_memory_diag(m_comm);
 
-        const bool isOutput = ((nt+1) % m_output_freq) == 0;
+        const bool isOutput = ((nt + 1) % m_output_freq) == 0;
         if (m_do_write && isOutput) {
-            m_amr.write_outputs((nt+1), m_stk.current_time());
+            m_amr.write_outputs((nt + 1), m_stk.current_time());
             m_stk.write_outputs(ofileID, m_stk.current_time());
         }
     }
@@ -131,8 +132,9 @@ void ExaTioga::perform_connectivity()
 void ExaTioga::exchange_solution()
 {
     if (m_amr.num_total_vars() < 1) {
-        amrex::Print() << "No solution variables available. Skipping solution update"
-                       << std::endl;
+        amrex::Print()
+            << "No solution variables available. Skipping solution update"
+            << std::endl;
     }
     amrex::Print() << "Registering solution variables" << std::endl;
     m_stk.register_solution();
@@ -148,4 +150,4 @@ void ExaTioga::exchange_solution()
     m_stk.update_solution();
 }
 
-}
+} // namespace tioga_amr

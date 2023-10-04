@@ -41,6 +41,6 @@ struct NgpAmrDualArray
     }
 };
 
-}
+} // namespace tioga_amr
 
 #endif /* NGPAMRTYPES_H */

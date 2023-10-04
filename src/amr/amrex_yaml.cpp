@@ -4,7 +4,8 @@
 
 namespace tioga_amr {
 
-void populate_parameters(const YAML::Node& node, const std::string& prefix, const bool required)
+void populate_parameters(
+    const YAML::Node& node, const std::string& prefix, const bool required)
 {
     if (!node[prefix]) {
         if (required)

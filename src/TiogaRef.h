@@ -22,42 +22,36 @@ namespace tioga_nalu {
 class TiogaRef
 {
 public:
-  /** Access the reference object
-   *
-   *  The first invocation can pass a pointer to a valid TIOGA instance which
-   *  makes this a non-owning reference holder. Otherwise it will create a new
-   *  instance and take ownership of that reference.
-   *
-   *  \param tg Pointer to an existing TIOGA instance
-   */
-  static TiogaRef& self(TIOGA::tioga* tg = nullptr);
+    /** Access the reference object
+     *
+     *  The first invocation can pass a pointer to a valid TIOGA instance which
+     *  makes this a non-owning reference holder. Otherwise it will create a new
+     *  instance and take ownership of that reference.
+     *
+     *  \param tg Pointer to an existing TIOGA instance
+     */
+    static TiogaRef& self(TIOGA::tioga* tg = nullptr);
 
-  ~TiogaRef();
+    ~TiogaRef();
 
-  TiogaRef(const TiogaRef&) = delete;
-  TiogaRef& operator=(const TiogaRef&) = delete;
+    TiogaRef(const TiogaRef&) = delete;
+    TiogaRef& operator=(const TiogaRef&) = delete;
 
-  inline operator TIOGA::tioga&()
-  {
-    return *tg_;
-  }
+    inline operator TIOGA::tioga&() { return *tg_; }
 
-  //! Access the underlying TIOGA reference
-  inline TIOGA::tioga& get()
-  {
-    return *tg_;
-  }
+    //! Access the underlying TIOGA reference
+    inline TIOGA::tioga& get() { return *tg_; }
 
 private:
-  TiogaRef();
+    TiogaRef();
 
-  TiogaRef(TIOGA::tioga* tg);
+    TiogaRef(TIOGA::tioga* tg);
 
-  TIOGA::tioga* tg_{nullptr};
+    TIOGA::tioga* tg_{nullptr};
 
-  bool owned_{false};
+    bool owned_{false};
 };
 
-}
+} // namespace tioga_nalu
 
 #endif /* TIOGAREF_H */

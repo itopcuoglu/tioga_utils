@@ -40,7 +40,7 @@ struct LevelDataHolder
 
 class FieldRepo;
 
-template<typename T>
+template <typename T>
 class FieldBase
 {
 public:
@@ -80,7 +80,12 @@ protected:
         const int ncomp = 1,
         const int ngrow = 1,
         const FieldLoc floc = FieldLoc::CELL)
-        : m_repo(repo), m_name(name), m_id(fid), m_ncomp(ncomp), m_ngrow(ngrow), m_floc(floc)
+        : m_repo(repo)
+        , m_name(name)
+        , m_id(fid)
+        , m_ncomp(ncomp)
+        , m_ngrow(ngrow)
+        , m_floc(floc)
     {}
 
     FieldRepo& m_repo;
@@ -101,8 +106,7 @@ public:
     friend class FieldBase<amrex::iMultiFab>;
 
     FieldRepo(const amrex::AmrCore& mesh)
-        : m_mesh(mesh)
-        , m_leveldata(mesh.maxLevel() + 1)
+        : m_mesh(mesh), m_leveldata(mesh.maxLevel() + 1)
     {}
 
     FieldRepo(const FieldRepo&) = delete;
@@ -112,17 +116,20 @@ public:
     //! Perform field data management tasks when
     //! amrex::AmrCore::MakeNewLevelFromScratch is called
     void make_new_level_from_scratch(
-        int lev, amrex::Real time,
+        int lev,
+        amrex::Real time,
         const amrex::BoxArray& ba,
         const amrex::DistributionMapping& dm);
 
     void make_new_level_from_coarse(
-        int lev, amrex::Real time,
+        int lev,
+        amrex::Real time,
         const amrex::BoxArray& ba,
         const amrex::DistributionMapping& dm);
 
     void remake_level(
-        int lev, amrex::Real time,
+        int lev,
+        amrex::Real time,
         const amrex::BoxArray& ba,
         const amrex::DistributionMapping& dm);
 
@@ -143,17 +150,13 @@ public:
         const FieldLoc floc = FieldLoc::CELL);
 
     inline Field& declare_cc_field(
-        const std::string& name,
-        const int ncomp = 1,
-        const int ngrow = 0)
+        const std::string& name, const int ncomp = 1, const int ngrow = 0)
     {
         return declare_field(name, ncomp, ngrow, FieldLoc::CELL);
     }
 
     inline Field& declare_nd_field(
-        const std::string& name,
-        const int ncomp = 1,
-        const int ngrow = 0)
+        const std::string& name, const int ncomp = 1, const int ngrow = 0)
     {
         return declare_field(name, ncomp, ngrow, FieldLoc::NODE);
     }
@@ -162,7 +165,8 @@ public:
      */
     Field& get_field(const std::string& name) const;
 
-    //! Query if field uniquely identified by name and time state exists in repository
+    //! Query if field uniquely identified by name and time state exists in
+    //! repository
     bool field_exists(const std::string& name) const;
 
     IntField& declare_int_field(
@@ -172,17 +176,13 @@ public:
         const FieldLoc floc = FieldLoc::CELL);
 
     inline IntField& declare_cc_int_field(
-        const std::string& name,
-        const int ncomp = 1,
-        const int ngrow = 0)
+        const std::string& name, const int ncomp = 1, const int ngrow = 0)
     {
         return declare_int_field(name, ncomp, ngrow, FieldLoc::CELL);
     }
 
     inline IntField& declare_nd_int_field(
-        const std::string& name,
-        const int ncomp = 1,
-        const int ngrow = 0)
+        const std::string& name, const int ncomp = 1, const int ngrow = 0)
     {
         return declare_int_field(name, ncomp, ngrow, FieldLoc::NODE);
     }
@@ -205,13 +205,15 @@ private:
      *  \param fid Unique integer field identifier for this field
      *  \param lev AMR level
      */
-    inline amrex::MultiFab& get_multifab(const unsigned fid, const int lev) noexcept
+    inline amrex::MultiFab&
+    get_multifab(const unsigned fid, const int lev) noexcept
     {
         BL_ASSERT(lev <= m_mesh.finestLevel());
         return m_leveldata[lev]->m_mfabs[fid];
     }
 
-    inline amrex::iMultiFab& get_int_fab(const unsigned fid, const int lev) noexcept
+    inline amrex::iMultiFab&
+    get_int_fab(const unsigned fid, const int lev) noexcept
     {
         BL_ASSERT(lev <= m_mesh.finestLevel());
         return m_leveldata[lev]->m_int_fabs[fid];
@@ -267,7 +269,6 @@ private:
     bool m_is_initialized{false};
 };
 
-} // tioga_amr
-
+} // namespace tioga_amr
 
 #endif /* FIELDREPO_H */

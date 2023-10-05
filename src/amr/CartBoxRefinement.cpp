@@ -69,7 +69,8 @@ void CartBoxRefinement::initialize(
             const auto hivec = binfo["hi"].as<amrex::Vector<amrex::Real>>();
             AMREX_ALWAYS_ASSERT(hivec.size() == 3);
             AMREX_ALWAYS_ASSERT(hivec.size() == 3);
-            rbx_list.emplace_back(lovec[0], lovec[1], lovec[2], hivec[0], hivec[1], hivec[2]);
+            rbx_list.emplace_back(
+                lovec[0], lovec[1], lovec[2], hivec[0], hivec[1], hivec[2]);
         }
 
         auto ba = realbox_to_boxarray(rbx_list, geom[lev]);

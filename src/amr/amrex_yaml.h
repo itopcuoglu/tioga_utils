@@ -17,7 +17,7 @@ struct convert<amrex::Vector<T>>
 
         rhs.resize(node.size());
         for (int i = 0; i < node.size(); ++i) {
-          rhs[i] = node[i].as<T>();
+            rhs[i] = node[i].as<T>();
         }
         return true;
     }

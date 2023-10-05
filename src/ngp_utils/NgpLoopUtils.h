@@ -62,87 +62,87 @@ void run_entity_algorithm(
  *  @param algorithm A functor that will be executed for each entity
  *  @param reduceVal A scalar value that has the reduced value
  */
-template<typename Mesh, typename AlgFunctor, typename ReducerType>
+template <typename Mesh, typename AlgFunctor, typename ReducerType>
 void run_entity_par_reduce(
-  const std::string& algName,
-  const Mesh& mesh,
-  const stk::topology::rank_t rank,
-  const stk::mesh::Selector& sel,
-  const AlgFunctor algorithm,
-  ReducerType& reduceVal,
-  typename std::enable_if<std::is_arithmetic<ReducerType>::value, int>::type* = nullptr)
+    const std::string& algName,
+    const Mesh& mesh,
+    const stk::topology::rank_t rank,
+    const stk::mesh::Selector& sel,
+    const AlgFunctor algorithm,
+    ReducerType& reduceVal,
+    typename std::enable_if<std::is_arithmetic<ReducerType>::value, int>::
+        type* = nullptr)
 {
-  using Traits         = NGPMeshTraits<Mesh>;
-  using TeamPolicy     = typename Traits::TeamPolicy;
-  using TeamHandleType = typename Traits::TeamHandleType;
-  using MeshIndex      = typename Traits::MeshIndex;
+    using Traits = NGPMeshTraits<Mesh>;
+    using TeamPolicy = typename Traits::TeamPolicy;
+    using TeamHandleType = typename Traits::TeamHandleType;
+    using MeshIndex = typename Traits::MeshIndex;
 
-  const auto& buckets = mesh.get_bucket_ids(rank, sel);
-  auto team_exec = TeamPolicy(buckets.size(), Kokkos::AUTO);
+    const auto& buckets = mesh.get_bucket_ids(rank, sel);
+    auto team_exec = TeamPolicy(buckets.size(), Kokkos::AUTO);
 
-  Kokkos::parallel_reduce(
-    algName, team_exec,
-    KOKKOS_LAMBDA(const TeamHandleType& team, ReducerType& teamVal) {
-      auto bktId = buckets.device_get(team.league_rank());
-      auto& bkt = mesh.get_bucket(rank, bktId);
+    Kokkos::parallel_reduce(
+        algName, team_exec,
+        KOKKOS_LAMBDA(const TeamHandleType& team, ReducerType& teamVal) {
+            auto bktId = buckets.device_get(team.league_rank());
+            auto& bkt = mesh.get_bucket(rank, bktId);
 
-      ReducerType bktVal = 0.0;
-      const size_t bktLen = bkt.size();
-      Kokkos::parallel_reduce(
-        Kokkos::TeamThreadRange(team, bktLen),
-        [&](const size_t& bktIndex, ReducerType& threadVal) {
-          MeshIndex meshIdx{&bkt, static_cast<unsigned>(bktIndex)};
-          algorithm(meshIdx, threadVal);
-        }, bktVal);
+            ReducerType bktVal = 0.0;
+            const size_t bktLen = bkt.size();
+            Kokkos::parallel_reduce(
+                Kokkos::TeamThreadRange(team, bktLen),
+                [&](const size_t& bktIndex, ReducerType& threadVal) {
+                    MeshIndex meshIdx{&bkt, static_cast<unsigned>(bktIndex)};
+                    algorithm(meshIdx, threadVal);
+                },
+                bktVal);
 
-      Kokkos::single(
-        Kokkos::PerTeam(team),
-        [&]() {
-          teamVal += bktVal;
-        });
-    }, reduceVal);
+            Kokkos::single(Kokkos::PerTeam(team), [&]() { teamVal += bktVal; });
+        },
+        reduceVal);
 }
 
-template<typename Mesh, typename AlgFunctor, typename ReducerType>
+template <typename Mesh, typename AlgFunctor, typename ReducerType>
 void run_entity_par_reduce(
-  const std::string& algName,
-  const Mesh& mesh,
-  const stk::topology::rank_t rank,
-  const stk::mesh::Selector& sel,
-  const AlgFunctor algorithm,
-  ReducerType& reduceVal,
-  typename std::enable_if<!std::is_arithmetic<ReducerType>::value, int>::type* = nullptr)
+    const std::string& algName,
+    const Mesh& mesh,
+    const stk::topology::rank_t rank,
+    const stk::mesh::Selector& sel,
+    const AlgFunctor algorithm,
+    ReducerType& reduceVal,
+    typename std::enable_if<!std::is_arithmetic<ReducerType>::value, int>::
+        type* = nullptr)
 {
-  using Traits         = NGPMeshTraits<Mesh>;
-  using TeamPolicy     = typename Traits::TeamPolicy;
-  using TeamHandleType = typename Traits::TeamHandleType;
-  using MeshIndex      = typename Traits::MeshIndex;
-  using value_type     = typename ReducerType::value_type;
+    using Traits = NGPMeshTraits<Mesh>;
+    using TeamPolicy = typename Traits::TeamPolicy;
+    using TeamHandleType = typename Traits::TeamHandleType;
+    using MeshIndex = typename Traits::MeshIndex;
+    using value_type = typename ReducerType::value_type;
 
-  const auto& buckets = mesh.get_bucket_ids(rank, sel);
-  auto team_exec = TeamPolicy(buckets.size(), Kokkos::AUTO);
+    const auto& buckets = mesh.get_bucket_ids(rank, sel);
+    auto team_exec = TeamPolicy(buckets.size(), Kokkos::AUTO);
 
-  Kokkos::parallel_reduce(
-    algName, team_exec,
-    KOKKOS_LAMBDA(const TeamHandleType& team, value_type& teamVal) {
-      auto bktId = buckets.device_get(team.league_rank());
-      auto& bkt = mesh.get_bucket(rank, bktId);
+    Kokkos::parallel_reduce(
+        algName, team_exec,
+        KOKKOS_LAMBDA(const TeamHandleType& team, value_type& teamVal) {
+            auto bktId = buckets.device_get(team.league_rank());
+            auto& bkt = mesh.get_bucket(rank, bktId);
 
-      value_type bktVal;
-      const size_t bktLen = bkt.size();
-      Kokkos::parallel_reduce(
-        Kokkos::TeamThreadRange(team, bktLen),
-        [&](const size_t& bktIndex, value_type& threadVal) {
-          MeshIndex meshIdx{&bkt, static_cast<unsigned>(bktIndex)};
-          algorithm(meshIdx, threadVal);
-        }, ReducerType(bktVal));
+            value_type bktVal;
+            const size_t bktLen = bkt.size();
+            Kokkos::parallel_reduce(
+                Kokkos::TeamThreadRange(team, bktLen),
+                [&](const size_t& bktIndex, value_type& threadVal) {
+                    MeshIndex meshIdx{&bkt, static_cast<unsigned>(bktIndex)};
+                    algorithm(meshIdx, threadVal);
+                },
+                ReducerType(bktVal));
 
-      Kokkos::single(
-        Kokkos::PerTeam(team),
-        [&]() {
-          reduceVal.join(teamVal, bktVal);
-        });
-    }, reduceVal);
+            Kokkos::single(Kokkos::PerTeam(team), [&]() {
+                reduceVal.join(teamVal, bktVal);
+            });
+        },
+        reduceVal);
 }
 
 } // namespace ngp

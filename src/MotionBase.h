@@ -17,16 +17,17 @@ typedef stk::mesh::Field<double> ScalarFieldType;
 class MotionBase
 {
 public:
-  MotionBase(stk::mesh::MetaData &meta, stk::mesh::BulkData &bulk)
-      : meta_(meta), bulk_(bulk) {}
+    MotionBase(stk::mesh::MetaData& meta, stk::mesh::BulkData& bulk)
+        : meta_(meta), bulk_(bulk)
+    {}
 
-  virtual ~MotionBase() {}
+    virtual ~MotionBase() {}
 
-  virtual void setup();
+    virtual void setup();
 
-  virtual void initialize(double) = 0;
+    virtual void initialize(double) = 0;
 
-  virtual void execute(double) = 0;
+    virtual void execute(double) = 0;
 
 private:
     MotionBase() = delete;
@@ -42,7 +43,6 @@ protected:
     stk::mesh::PartVector partVec_;
 };
 
-
-} // tioga_nalu
+} // namespace tioga_nalu
 
 #endif /* MOTIONBASE_H */

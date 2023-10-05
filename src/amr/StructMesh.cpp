@@ -4,9 +4,7 @@
 
 namespace tioga_amr {
 
-StructMesh::StructMesh()
-    : m_repo(*this)
-{}
+StructMesh::StructMesh() : m_repo(*this) {}
 
 void StructMesh::initialize_mesh(const amrex::Real current_time)
 {
@@ -14,7 +12,8 @@ void StructMesh::initialize_mesh(const amrex::Real current_time)
 
     if (amrex::ParallelDescriptor::IOProcessor()) {
         amrex::Print() << "AMReX grid summary: " << std::endl
-                       << "  Problem domain: " << Geom(0).ProbDomain() << std::endl;
+                       << "  Problem domain: " << Geom(0).ProbDomain()
+                       << std::endl;
         printGridSummary(amrex::OutStream(), 0, finestLevel());
     }
 }
@@ -55,16 +54,12 @@ void StructMesh::RemakeLevel(
     m_repo.remake_level(lev, time, ba, dm);
 }
 
-void StructMesh::ClearLevel(int lev)
-{
-    m_repo.clear_level(lev);
-}
+void StructMesh::ClearLevel(int lev) { m_repo.clear_level(lev); }
 
 void StructMesh::ErrorEst(
     int lev, amrex::TagBoxArray& tags, amrex::Real time, int ngrow)
 {
-    for (auto& rc: m_refine_vec)
-        (*rc)(lev, tags, time, ngrow);
+    for (auto& rc : m_refine_vec) (*rc)(lev, tags, time, ngrow);
 }
 
 void StructMesh::load(const YAML::Node& node)
@@ -73,7 +68,7 @@ void StructMesh::load(const YAML::Node& node)
 
     const auto& rnode = node["refinement"];
     AMREX_ALWAYS_ASSERT(rnode.IsSequence());
-    for (int i=0; i < rnode.size(); ++i) {
+    for (int i = 0; i < rnode.size(); ++i) {
         const auto& ref = rnode[i];
         if (ref["type"]) {
             // Only static refinement supported now
@@ -86,4 +81,4 @@ void StructMesh::load(const YAML::Node& node)
     }
 }
 
-}
+} // namespace tioga_amr

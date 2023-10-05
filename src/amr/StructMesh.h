@@ -21,7 +21,7 @@ public:
 
     void load(const YAML::Node&);
 
-    void initialize_mesh(const amrex::Real current_time=0.0);
+    void initialize_mesh(const amrex::Real current_time = 0.0);
 
     int num_levels() const { return finest_level + 1; }
 
@@ -29,15 +29,21 @@ public:
 
 protected:
     virtual void MakeNewLevelFromScratch(
-        int lev, amrex::Real time, const amrex::BoxArray& ba,
+        int lev,
+        amrex::Real time,
+        const amrex::BoxArray& ba,
         const amrex::DistributionMapping& dm) override;
 
     virtual void MakeNewLevelFromCoarse(
-        int lev, amrex::Real time, const amrex::BoxArray& ba,
+        int lev,
+        amrex::Real time,
+        const amrex::BoxArray& ba,
         const amrex::DistributionMapping& dm) override;
 
     virtual void RemakeLevel(
-        int lev, amrex::Real time, const amrex::BoxArray& ba,
+        int lev,
+        amrex::Real time,
+        const amrex::BoxArray& ba,
         const amrex::DistributionMapping& dm) override;
 
     virtual void ClearLevel(int lev) override;
@@ -50,6 +56,6 @@ protected:
     amrex::Vector<std::unique_ptr<RefinementCriteria>> m_refine_vec;
 };
 
-}
+} // namespace tioga_amr
 
 #endif /* STRUCTMESH_H */

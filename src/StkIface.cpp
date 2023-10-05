@@ -52,13 +52,14 @@ void StkIface::setup()
         std::cout << "Performing STK setup" << std::endl;
     }
     auto timeMon = get_timer("StkIface::setup");
-    if (has_motion_)
-        motion_->setup();
+    if (has_motion_) motion_->setup();
     tg_->setup();
 
     if (num_vars() > 0) {
-        auto& qvar = meta_.declare_field<GenericFieldType>(stk::topology::NODE_RANK, "qvars");
-        stk::mesh::put_field_on_mesh(qvar, meta_.universal_part(), num_vars(), nullptr);
+        auto& qvar = meta_.declare_field<GenericFieldType>(
+            stk::topology::NODE_RANK, "qvars");
+        stk::mesh::put_field_on_mesh(
+            qvar, meta_.universal_part(), num_vars(), nullptr);
     }
 }
 
@@ -68,10 +69,8 @@ void StkIface::initialize()
         std::cout << "Performing STK initialize" << std::endl;
     }
     auto timeMon = get_timer("StkIface::initialize");
-    if (has_motion_)
-        motion_->initialize();
+    if (has_motion_) motion_->initialize();
     tg_->initialize();
-
 }
 
 void StkIface::populate_bulk_data()
@@ -99,21 +98,19 @@ void StkIface::register_solution()
     tg_->register_solution(num_vars());
 }
 
-
 size_t StkIface::write_outputs(const YAML::Node& node, const double time)
 {
     auto tmon = tioga_nalu::get_timer("TiogaAMRIface::write_outputs");
 
     bool has_motion = false;
-    if (node["motion_info"])
-        has_motion = true;
+    if (node["motion_info"]) has_motion = true;
 
     auto* cell_vol = meta_.get_field<ScalarFieldType>(
         stk::topology::ELEM_RANK, "cell_volume");
     auto* nodal_vol = meta_.get_field<ScalarFieldType>(
         stk::topology::NODE_RANK, "nodal_volume");
-    ScalarFieldType* ibf = meta_.get_field<ScalarFieldType>(
-        stk::topology::NODE_RANK, "iblank");
+    ScalarFieldType* ibf =
+        meta_.get_field<ScalarFieldType>(stk::topology::NODE_RANK, "iblank");
     ScalarFieldType* ibcell = meta_.get_field<ScalarFieldType>(
         stk::topology::ELEM_RANK, "iblank_cell");
 
@@ -139,8 +136,7 @@ size_t StkIface::write_outputs(const YAML::Node& node, const double time)
     }
 
     // Sync fields to host before output
-    for (auto* fld: meta_.get_fields())
-        fld->sync_to_host();
+    for (auto* fld : meta_.get_fields()) fld->sync_to_host();
 
     stkio_.begin_output_step(fh, time);
     stkio_.write_defined_output_fields(fh);
@@ -155,8 +151,7 @@ void StkIface::write_outputs(size_t fh, const double time)
         std::cout << "Writing to STK output file at: " << time << std::endl;
 
     // Sync fields to host before output
-    for (auto* fld: meta_.get_fields())
-        fld->sync_to_host();
+    for (auto* fld : meta_.get_fields()) fld->sync_to_host();
 
     stkio_.begin_output_step(fh, time);
     stkio_.write_defined_output_fields(fh);
@@ -169,18 +164,19 @@ void StkIface::init_vars()
 
     auto* coords = meta_.get_field<VectorFieldType>(
         stk::topology::NODE_RANK, coordinates_name());
-    auto* qvars = meta_.get_field<GenericFieldType>(stk::topology::NODE_RANK, "qvars");
+    auto* qvars =
+        meta_.get_field<GenericFieldType>(stk::topology::NODE_RANK, "qvars");
     const stk::mesh::Selector sel = stk::mesh::selectField(*qvars);
     const auto& bkts = bulk_.get_buckets(stk::topology::NODE_RANK, sel);
 
-    for (auto b: bkts) {
-        for (size_t in=0; in < b->size(); ++in) {
+    for (auto b : bkts) {
+        for (size_t in = 0; in < b->size(); ++in) {
             const auto node = (*b)[in];
             const double* xyz = stk::mesh::field_data(*coords, node);
             double* qq = stk::mesh::field_data(*qvars, node);
 
             if (ncell_vars_ > 0) {
-                for (int n=0; n < ncell_vars_; ++n) {
+                for (int n = 0; n < ncell_vars_; ++n) {
                     const double xfac = 1.0 * ((n + 1) << n);
                     const double yfac = 1.0 * ((n + 2) << n);
                     const double zfac = 1.0 * ((n + 3) << n);
@@ -190,7 +186,7 @@ void StkIface::init_vars()
 
             if (nnode_vars_ > 0) {
                 const int ii = ncell_vars_;
-                for (int n=0; n < nnode_vars_; ++n) {
+                for (int n = 0; n < nnode_vars_; ++n) {
                     const double xfac = 1.0 * ((n + 1) << n);
                     const double yfac = 1.0 * ((n + 2) << n);
                     const double zfac = 1.0 * ((n + 3) << n);

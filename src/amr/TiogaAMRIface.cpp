@@ -67,10 +67,7 @@ NgpAMRInfo::NgpAMRInfo(const int nglobal, const int nlocal)
     , qnode(nlocal)
 {}
 
-
-TiogaAMRIface::TiogaAMRIface()
-    : m_info(new TIOGA::AMRMeshInfo)
-{}
+TiogaAMRIface::TiogaAMRIface() : m_info(new TIOGA::AMRMeshInfo) {}
 
 TiogaAMRIface::~TiogaAMRIface() = default;
 
@@ -104,12 +101,16 @@ void TiogaAMRIface::initialize()
     if (m_ncell_vars > 0) {
         m_qcell = &repo.declare_field("qcell", m_ncell_vars, m_num_ghost);
         repo.declare_field("qcell_ref", m_ncell_vars, m_num_ghost);
-        amrex::Print() << "Number of cell variables: " << m_ncell_vars << std::endl;
+        amrex::Print() << "Number of cell variables: " << m_ncell_vars
+                       << std::endl;
     }
     if (m_nnode_vars > 0) {
-        m_qnode = &repo.declare_field("qnode", m_nnode_vars, m_num_ghost, FieldLoc::NODE);
-        repo.declare_field("qnode_ref", m_nnode_vars, m_num_ghost, FieldLoc::NODE);
-        amrex::Print() << "Number of nodal variables: " << m_nnode_vars << std::endl;
+        m_qnode = &repo.declare_field(
+            "qnode", m_nnode_vars, m_num_ghost, FieldLoc::NODE);
+        repo.declare_field(
+            "qnode_ref", m_nnode_vars, m_num_ghost, FieldLoc::NODE);
+        amrex::Print() << "Number of nodal variables: " << m_nnode_vars
+                       << std::endl;
     }
 }
 
@@ -124,11 +125,11 @@ void TiogaAMRIface::register_mesh(TIOGA::tioga& tg, const bool verbose)
 
     int ngrids_global = 0;
     int ngrids_local = 0;
-    for (int lev=0; lev < nlevels; ++lev) {
+    for (int lev = 0; lev < nlevels; ++lev) {
         ngrids_global += mesh.boxArray(lev).size();
 
         const auto& dmap = mesh.DistributionMap(lev);
-        for (long d=0; d < dmap.size(); ++d) {
+        for (long d = 0; d < dmap.size(); ++d) {
             if (dmap[d] == iproc) ++ngrids_local;
         }
     }
@@ -148,19 +149,20 @@ void TiogaAMRIface::register_mesh(TIOGA::tioga& tg, const bool verbose)
         const amrex::Real* dx = mesh.Geom(lev).CellSize();
 
         auto& ad = *m_amr_data;
-        for (long d=0; d < dm.size(); ++d) {
-            ad.level.h_view[iix] = lev;           // AMR Level of this patch
-            ad.mpi_rank.h_view[iix] = dm[d];      // MPI rank of this patch
-            ad.local_id.h_view[iix] = lgrid_id[dm[d]]; // Local ID for this patch
+        for (long d = 0; d < dm.size(); ++d) {
+            ad.level.h_view[iix] = lev;      // AMR Level of this patch
+            ad.mpi_rank.h_view[iix] = dm[d]; // MPI rank of this patch
+            ad.local_id.h_view[iix] =
+                lgrid_id[dm[d]]; // Local ID for this patch
 
             const auto& bx = ba[d];
             const int* lo = bx.loVect();
             const int* hi = bx.hiVect();
 
             const int ioff = AMREX_SPACEDIM * iix;
-            for (int i=0; i < AMREX_SPACEDIM; ++i) {
+            for (int i = 0; i < AMREX_SPACEDIM; ++i) {
                 ad.ilow.h_view[ioff + i] = lo[i];
-                ad.ihigh.h_view[ioff + i] =  hi[i];
+                ad.ihigh.h_view[ioff + i] = hi[i];
                 ad.dims.h_view[ioff + i] = (hi[i] - lo[i]) + 1;
 
                 ad.xlo.h_view[ioff + i] = problo[i] + lo[i] * dx[i];
@@ -193,7 +195,7 @@ void TiogaAMRIface::register_mesh(TIOGA::tioga& tg, const bool verbose)
     ilp = 0;
     auto& ibcell = mesh.repo().get_int_field("iblank_cell");
     auto& ibnode = mesh.repo().get_int_field("iblank");
-    for (int lev=0; lev < nlevels; ++lev) {
+    for (int lev = 0; lev < nlevels; ++lev) {
         auto& ad = *m_amr_data;
         auto& ibfab = ibcell(lev);
         auto& ibnodefab = ibnode(lev);
@@ -266,7 +268,7 @@ void TiogaAMRIface::register_solution(TIOGA::tioga& tg)
 
     // Copy solution to reference fabs
     const int nlevels = m_mesh->repo().num_active_levels();
-    for (int lev=0; lev < nlevels; ++lev) {
+    for (int lev = 0; lev < nlevels; ++lev) {
         if (m_ncell_vars > 0) {
             auto& qref = m_mesh->repo().get_field("qcell_ref");
             auto& qfab = (*m_qcell)(lev);
@@ -274,8 +276,8 @@ void TiogaAMRIface::register_solution(TIOGA::tioga& tg)
                 auto& qarr = qfab[mfi];
             }
             auto& qref_fab = qref(lev);
-            amrex::MultiFab::Copy(qref_fab, qfab, 0, 0,
-                                  qref.num_comp(), qref.num_grow());
+            amrex::MultiFab::Copy(
+                qref_fab, qfab, 0, 0, qref.num_comp(), qref.num_grow());
         }
         if (m_nnode_vars > 0) {
             auto& qfab = (*m_qnode)(lev);
@@ -284,8 +286,8 @@ void TiogaAMRIface::register_solution(TIOGA::tioga& tg)
             }
             auto& qref = m_mesh->repo().get_field("qnode_ref");
             auto& qref_fab = qref(lev);
-            amrex::MultiFab::Copy(qref_fab, qfab, 0, 0,
-                                  qref.num_comp(), qref.num_grow());
+            amrex::MultiFab::Copy(
+                qref_fab, qfab, 0, 0, qref.num_comp(), qref.num_grow());
         }
     }
 
@@ -301,7 +303,7 @@ void TiogaAMRIface::update_solution()
     amrex::Real rnorm = 0.0;
     amrex::Real err_tol = 1.0e-12;
     int counter = 0;
-    for (int lev=0; lev < nlevels; ++lev) {
+    for (int lev = 0; lev < nlevels; ++lev) {
         if (m_ncell_vars > 0) {
             const int ncomp = m_ncell_vars;
             auto& qref = m_mesh->repo().get_field("qcell_ref");
@@ -351,10 +353,12 @@ void TiogaAMRIface::update_solution()
     amrex::Print() << "TIOGA interpolation error (max L2 norm) for AMR mesh: "
                    << rnorm << std::endl;
 
-    if(amrex::ParallelDescriptor::IOProcessor()){
-	if(rnorm>=err_tol){
-	throw std::runtime_error("TIOGA interpolation error for AMR mesh is above the set tolerance. Aborting exatioga");
-	}
+    if (amrex::ParallelDescriptor::IOProcessor()) {
+        if (rnorm >= err_tol) {
+            throw std::runtime_error(
+                "TIOGA interpolation error for AMR mesh is above the set "
+                "tolerance. Aborting exatioga");
+        }
     }
 }
 
@@ -369,15 +373,15 @@ void TiogaAMRIface::write_outputs(const int time_index, const double time)
     auto& ibcell = repo.get_int_field("iblank_cell");
     auto& ibnode = repo.get_int_field("iblank");
     amrex::Vector<std::string> vnames{"iblank_cell", "iblank"};
-    for (int n=0; n < m_ncell_vars; ++n) {
+    for (int n = 0; n < m_ncell_vars; ++n) {
         vnames.push_back("qcell" + std::to_string(n));
     }
-    for (int n=0; n < m_nnode_vars; ++n) {
+    for (int n = 0; n < m_nnode_vars; ++n) {
         vnames.push_back("qnode" + std::to_string(n));
     }
 
     const int nlevels = m_mesh->finestLevel() + 1;
-    for (int lev=0; lev < nlevels; ++lev) {
+    for (int lev = 0; lev < nlevels; ++lev) {
         auto& qfab = qout(lev);
         {
             auto& ibc = ibcell(lev);
@@ -397,7 +401,8 @@ void TiogaAMRIface::write_outputs(const int time_index, const double time)
 
         if (m_nnode_vars > 0) {
             auto& qvars = repo.get_field("qnode")(lev);
-            amrex::average_node_to_cellcenter(qfab, icomp, qvars, 0, m_nnode_vars, 0);
+            amrex::average_node_to_cellcenter(
+                qfab, icomp, qvars, 0, m_nnode_vars, 0);
         }
     }
 
@@ -405,11 +410,12 @@ void TiogaAMRIface::write_outputs(const int time_index, const double time)
     const std::string& plt_filename = amrex::Concatenate("plt", time_index);
     amrex::Print() << "Writing plot file: " << plt_filename << std::endl;
     amrex::WriteMultiLevelPlotfile(
-        plt_filename, nlevels, qout.vec_const_ptrs(), vnames,
-        m_mesh->Geom(), time, istep, m_mesh->refRatio());
+        plt_filename, nlevels, qout.vec_const_ptrs(), vnames, m_mesh->Geom(),
+        time, istep, m_mesh->refRatio());
 }
 
-void TiogaAMRIface::init_var(Field& qcell, const int nvars, const amrex::Real offset)
+void TiogaAMRIface::init_var(
+    Field& qcell, const int nvars, const amrex::Real offset)
 {
     if (nvars < 1) return;
     auto tmon = tioga_nalu::get_timer("TiogaAMRIface::init_var");
@@ -427,18 +433,19 @@ void TiogaAMRIface::init_var(Field& qcell, const int nvars, const amrex::Real of
             const auto bx = mfi.growntilebox(m_num_ghost);
             const auto qarr = qfab.array(mfi);
 
-            amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept {
-                const amrex::Real x = problo[0] + (i + offset) * dx[0];
-                const amrex::Real y = problo[1] + (j + offset) * dx[1];
-                const amrex::Real z = problo[2] + (k + offset) * dx[2];
+            amrex::ParallelFor(
+                bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                    const amrex::Real x = problo[0] + (i + offset) * dx[0];
+                    const amrex::Real y = problo[1] + (j + offset) * dx[1];
+                    const amrex::Real z = problo[2] + (k + offset) * dx[2];
 
-                for (int n = 0; n < nvars; ++n) {
-                    const amrex::Real xfac = 1.0 * ((n + 1) << n);
-                    const amrex::Real yfac = 1.0 * ((n + 2) << n);
-                    const amrex::Real zfac = 1.0 * ((n + 3) << n);
-                    qarr(i, j, k, n) = xfac * x + yfac * y +  zfac * z;
-                }
-            });
+                    for (int n = 0; n < nvars; ++n) {
+                        const amrex::Real xfac = 1.0 * ((n + 1) << n);
+                        const amrex::Real yfac = 1.0 * ((n + 2) << n);
+                        const amrex::Real zfac = 1.0 * ((n + 3) << n);
+                        qarr(i, j, k, n) = xfac * x + yfac * y + zfac * z;
+                    }
+                });
         }
     }
 }

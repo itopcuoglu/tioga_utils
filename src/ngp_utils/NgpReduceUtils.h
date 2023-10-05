@@ -98,54 +98,70 @@ using ArrayDbl3 = NgpReduceArray<double, 3>;
 
 namespace Kokkos {
 
-template<>
+template <>
 struct reduction_identity<tioga_nalu::ngp::ArrayInt2>
 {
     KOKKOS_FORCEINLINE_FUNCTION
     static tioga_nalu::ngp::ArrayInt2 sum()
-    { return tioga_nalu::ngp::ArrayInt2(0); }
+    {
+        return tioga_nalu::ngp::ArrayInt2(0);
+    }
 
     KOKKOS_FORCEINLINE_FUNCTION
     static tioga_nalu::ngp::ArrayInt2 prod()
-    { return tioga_nalu::ngp::ArrayInt2(1); }
+    {
+        return tioga_nalu::ngp::ArrayInt2(1);
+    }
 };
 
-template<>
+template <>
 struct reduction_identity<tioga_nalu::ngp::ArrayInt3>
 {
     KOKKOS_FORCEINLINE_FUNCTION
     static tioga_nalu::ngp::ArrayInt3 sum()
-    { return tioga_nalu::ngp::ArrayInt3(0); }
+    {
+        return tioga_nalu::ngp::ArrayInt3(0);
+    }
 
     KOKKOS_FORCEINLINE_FUNCTION
     static tioga_nalu::ngp::ArrayInt3 prod()
-    { return tioga_nalu::ngp::ArrayInt3(1); }
+    {
+        return tioga_nalu::ngp::ArrayInt3(1);
+    }
 };
 
-template<>
+template <>
 struct reduction_identity<tioga_nalu::ngp::ArrayDbl2>
 {
     KOKKOS_FORCEINLINE_FUNCTION
     static tioga_nalu::ngp::ArrayDbl2 sum()
-    { return tioga_nalu::ngp::ArrayDbl2(0.0); }
+    {
+        return tioga_nalu::ngp::ArrayDbl2(0.0);
+    }
 
     KOKKOS_FORCEINLINE_FUNCTION
     static tioga_nalu::ngp::ArrayDbl2 prod()
-    { return tioga_nalu::ngp::ArrayDbl2(1.0); }
+    {
+        return tioga_nalu::ngp::ArrayDbl2(1.0);
+    }
 };
 
-template<>
+template <>
 struct reduction_identity<tioga_nalu::ngp::ArrayDbl3>
 {
     KOKKOS_FORCEINLINE_FUNCTION
     static tioga_nalu::ngp::ArrayDbl3 sum()
-    { return tioga_nalu::ngp::ArrayDbl3(0.0); }
+    {
+        return tioga_nalu::ngp::ArrayDbl3(0.0);
+    }
 
     KOKKOS_FORCEINLINE_FUNCTION
     static tioga_nalu::ngp::ArrayDbl3 prod()
-    { return tioga_nalu::ngp::ArrayDbl3(1.0); }
+    {
+        return tioga_nalu::ngp::ArrayDbl3(1.0);
+    }
 };
 
-}
+} // namespace Kokkos
 
 #endif /* NGPREDUCEUTILS_H */

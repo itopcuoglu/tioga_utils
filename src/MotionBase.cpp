@@ -7,7 +7,7 @@ namespace tioga_nalu {
 
 void MotionBase::setup()
 {
-    for (auto pName: partNames_) {
+    for (auto pName : partNames_) {
         stk::mesh::Part* part = meta_.get_part(pName);
         if (nullptr == part)
             throw std::runtime_error(
@@ -23,11 +23,11 @@ void MotionBase::setup()
     VectorFieldType& mesh_displacement = meta_.declare_field<VectorFieldType>(
         stk::topology::NODE_RANK, "mesh_displacement");
 
-    for (auto* p: partVec_) {
+    for (auto* p : partVec_) {
         stk::mesh::put_field_on_mesh(coordinates, *p, nullptr);
         stk::mesh::put_field_on_mesh(current_coordinates, *p, nullptr);
         stk::mesh::put_field_on_mesh(mesh_displacement, *p, nullptr);
     }
 }
 
-} // tioga_nalu
+} // namespace tioga_nalu

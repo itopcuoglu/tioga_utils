@@ -34,31 +34,19 @@ public:
 
     void write_outputs(size_t fh, const double time);
 
-    void register_mesh()
-    {
-        tg_->register_mesh();
-    }
+    void register_mesh() { tg_->register_mesh(); }
 
-    void post_connectivity_work()
-    {
-        tg_->post_connectivity_work();
-    }
+    void post_connectivity_work() { tg_->post_connectivity_work(); }
 
     void register_solution();
 
-    void update_solution()
-    {
-        tg_->update_solution(num_vars());
-    }
+    void update_solution() { tg_->update_solution(num_vars()); }
 
-    void move_mesh(int nt)
-    {
-        motion_->execute(nt);
-    }
+    void move_mesh(int nt) { motion_->execute(nt); }
 
     std::string coordinates_name() const
     {
-        return (has_motion_? "current_coordinates" : "coordinates");
+        return (has_motion_ ? "current_coordinates" : "coordinates");
     }
 
     bool has_motion() const { return has_motion_; }
@@ -98,7 +86,6 @@ private:
     bool has_motion_{false};
 };
 
-}
-
+} // namespace tioga_nalu
 
 #endif /* STKIFACE_H */

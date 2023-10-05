@@ -20,15 +20,14 @@ void print_configuration()
     char hostname[MPI_MAX_PROCESSOR_NAME];
     int len;
     MPI_Get_processor_name(hostname, &len);
-    amrex::Print()
-        << "\nRun configuration: "
-        << "Num. MPI ranks = " << nprocs << std::endl;
+    amrex::Print() << "\nRun configuration: "
+                   << "Num. MPI ranks = " << nprocs << std::endl;
 #ifdef AMREX_USE_CUDA
 #if defined(CUDA_VERSION)
     amrex::Print() << "CUDA configuration: "
-                   << "CUDA_VERSION: " << CUDA_VERSION
-                   << " " << CUDA_VERSION / 1000 << "."
-                   << (CUDA_VERSION % 1000) / 10 << std::endl;
+                   << "CUDA_VERSION: " << CUDA_VERSION << " "
+                   << CUDA_VERSION / 1000 << "." << (CUDA_VERSION % 1000) / 10
+                   << std::endl;
 #endif
     std::ostringstream buf;
 
@@ -49,9 +48,8 @@ void print_configuration()
     }
     char busid[512];
     cudaDeviceGetPCIBusId(busid, 512, rankDevice);
-    buf << rankDevice << "/" << ndevices << ": "
-        << dev.name << " CC: " << dev.major << "." << dev.minor
-        << " ID: " << busid;
+    buf << rankDevice << "/" << ndevices << ": " << dev.name
+        << " CC: " << dev.major << "." << dev.minor << " ID: " << busid;
     std::cout << buf.str() << std::endl;
 #endif
     amrex::ParallelDescriptor::Barrier();
@@ -59,17 +57,16 @@ void print_configuration()
 }
 
 bool parse_cmdline(
-    int& argc, char** argv,
-    stk::ParsedOptions& options, std::string& inpfile)
+    int& argc, char** argv, stk::ParsedOptions& options, std::string& inpfile)
 {
     stk::OptionsSpecification opts("TIOGA utils options");
-    opts.add_options()
-        ("help,h", "Print help message and exit")
-        ("input-file,i", "YAML input file",
-         stk::DefaultValue<std::string>("exatioga.yaml"),
-         stk::TargetPointer<std::string>(&inpfile));
+    opts.add_options()("help,h", "Print help message and exit")(
+        "input-file,i", "YAML input file",
+        stk::DefaultValue<std::string>("exatioga.yaml"),
+        stk::TargetPointer<std::string>(&inpfile));
 
-    stk::parse_command_line_args(argc, const_cast<const char**>(argv), opts, options);
+    stk::parse_command_line_args(
+        argc, const_cast<const char**>(argv), opts, options);
 
     if (options.count("help")) {
         if (!stk::parallel_machine_rank(MPI_COMM_WORLD))
@@ -104,8 +101,8 @@ int main(int argc, char** argv)
     const YAML::Node doc = YAML::LoadFile(input_file);
     if (!stk::parallel_machine_rank(comm)) {
         std::cout << "ExaWind TIOGA overset connectivity\n"
-                  << "Processing inputs from file: " << input_file
-                  << std::endl << std::endl;
+                  << "Processing inputs from file: " << input_file << std::endl
+                  << std::endl;
     }
     {
         int targc = 0;

@@ -15,10 +15,7 @@ namespace tioga_nalu {
 class MeshMotion
 {
 public:
-    MeshMotion(
-        stk::mesh::MetaData&,
-        stk::mesh::BulkData&,
-        const YAML::Node&);
+    MeshMotion(stk::mesh::MetaData&, stk::mesh::BulkData&, const YAML::Node&);
 
     virtual ~MeshMotion() {}
 
@@ -53,7 +50,6 @@ private:
     int numSteps_{0};
 };
 
-
-} // tioga_nalu
+} // namespace tioga_nalu
 
 #endif /* MESHMOTION_H */

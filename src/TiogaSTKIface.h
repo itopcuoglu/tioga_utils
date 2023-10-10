@@ -171,6 +171,7 @@ private:
     std::string coordsName_;
 
     bool use_ngp_iface_{false};
+    bool use_adaptive_hole_map_{false};
 };
 
 } // namespace tioga_nalu

@@ -58,7 +58,7 @@ void TiogaSTKIface::load(const YAML::Node& node)
     }
     if (node["use_adaptive_hole_map"]) {
         use_adaptive_hole_map_ = node["use_adaptive_hole_map"].as<bool>();
-        if (use_adaptive_hole_map_ == true) tg_.setHoleMapAlgorithm(1);
+        if (use_adaptive_hole_map_) tg_.setHoleMapAlgorithm(1);
     }
 }
 

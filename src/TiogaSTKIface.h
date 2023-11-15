@@ -95,6 +95,8 @@ public:
     /** Return the TIOGA interface object */
     TIOGA::tioga& tioga_iface() { return tg_; }
 
+    bool get_hole_map_algorithm();
+
 private:
     TiogaSTKIface() = delete;
     TiogaSTKIface(const TiogaSTKIface&) = delete;

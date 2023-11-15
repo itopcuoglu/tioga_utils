@@ -510,4 +510,9 @@ void TiogaSTKIface::update_solution(const int nvars)
     }
 }
 
+bool TiogaSTKIface::get_hole_map_algorithm()
+{
+	return use_adaptive_hole_map_;
+}
+
 } // namespace tioga_nalu

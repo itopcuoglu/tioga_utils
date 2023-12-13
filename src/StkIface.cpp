@@ -197,4 +197,9 @@ void StkIface::init_vars()
     }
 }
 
+bool StkIface::get_hole_map_algorithm()
+{
+	return tg_->get_hole_map_algorithm();
+}
+
 } // namespace tioga_nalu

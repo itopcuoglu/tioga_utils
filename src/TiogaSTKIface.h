@@ -95,6 +95,8 @@ public:
     /** Return the TIOGA interface object */
     TIOGA::tioga& tioga_iface() { return tg_; }
 
+    bool get_hole_map_algorithm();
+
 private:
     TiogaSTKIface() = delete;
     TiogaSTKIface(const TiogaSTKIface&) = delete;
@@ -171,6 +173,7 @@ private:
     std::string coordsName_;
 
     bool use_ngp_iface_{false};
+    bool use_adaptive_hole_map_{false};
 };
 
 } // namespace tioga_nalu

@@ -115,6 +115,7 @@ void ExaTioga::perform_connectivity()
     {
         auto tmon = tioga_nalu::get_timer("tioga::performConnectivity");
         amrex::Print() << "TIOGA unstructured connectivity" << std::endl;
+	if(m_stk.get_hole_map_algorithm()) m_tioga.assembleComms();
         m_tioga.performConnectivity();
         stk::parallel_machine_barrier(m_comm);
     }

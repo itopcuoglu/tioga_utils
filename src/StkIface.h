@@ -69,6 +69,8 @@ public:
 
     int num_vars() const { return ncell_vars_ + nnode_vars_; }
 
+    bool get_hole_map_algorithm();
+
 private:
     void init_vars();
 

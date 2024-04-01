@@ -71,6 +71,8 @@ public:
 
     bool get_hole_map_algorithm();
 
+    int get_composite_num();
+
 private:
     void init_vars();
 

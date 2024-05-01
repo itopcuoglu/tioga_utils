@@ -97,6 +97,8 @@ public:
 
     bool get_hole_map_algorithm();
 
+    int get_composite_num();
+
 private:
     TiogaSTKIface() = delete;
     TiogaSTKIface(const TiogaSTKIface&) = delete;
@@ -174,6 +176,7 @@ private:
 
     bool use_ngp_iface_{false};
     bool use_adaptive_hole_map_{false};
+    int num_composite_{0};
 };
 
 } // namespace tioga_nalu

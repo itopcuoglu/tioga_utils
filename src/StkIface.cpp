@@ -199,7 +199,9 @@ void StkIface::init_vars()
 
 bool StkIface::get_hole_map_algorithm()
 {
-	return tg_->get_hole_map_algorithm();
+    return tg_->get_hole_map_algorithm();
 }
+
+int StkIface::get_composite_num() { return tg_->get_composite_num(); }
 
 } // namespace tioga_nalu

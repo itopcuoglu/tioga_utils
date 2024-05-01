@@ -60,6 +60,31 @@ void TiogaSTKIface::load(const YAML::Node& node)
         use_adaptive_hole_map_ = node["use_adaptive_hole_map"].as<bool>();
         if (use_adaptive_hole_map_) tg_.setHoleMapAlgorithm(1);
     }
+
+    if (node["composite_body"]) {
+        const YAML::Node& composite_body = node["composite_body"];
+        num_composite_ = static_cast<int>(node["composite_body"].size());
+        tg_.setNumCompositeBodies(num_composite_);
+
+        for (int i = 0; i < num_composite_; i++) {
+            const YAML::Node& composite_node = composite_body[i];
+
+            const auto num_body_tags =
+                composite_node["num_body_tags"].as<int>();
+
+            auto body_tags = composite_node["body_tags"].as<std::vector<int>>();
+
+            auto dominance_tags =
+                composite_node["dominance_tags"].as<std::vector<int>>();
+
+            const double search_tol =
+                composite_node["search_tolerance"].as<double>();
+
+            tg_.registerCompositeBody(
+                (i + 1), num_body_tags, body_tags.data(), dominance_tags.data(),
+                search_tol);
+        }
+    }
 }
 
 void TiogaSTKIface::setup()
@@ -510,9 +535,8 @@ void TiogaSTKIface::update_solution(const int nvars)
     }
 }
 
-bool TiogaSTKIface::get_hole_map_algorithm()
-{
-	return use_adaptive_hole_map_;
-}
+bool TiogaSTKIface::get_hole_map_algorithm() { return use_adaptive_hole_map_; }
+
+int TiogaSTKIface::get_composite_num() { return num_composite_; }
 
 } // namespace tioga_nalu

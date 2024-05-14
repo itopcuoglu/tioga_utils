@@ -7,6 +7,7 @@
 #include "MeshMotion.h"
 #include "stk_mesh/base/MetaData.hpp"
 #include "stk_mesh/base/BulkData.hpp"
+#include "stk_mesh/base/MeshBuilder.hpp"
 #include "stk_io/StkMeshIoBroker.hpp"
 
 namespace YAML {
@@ -25,6 +26,11 @@ public:
     void setup();
 
     void populate_bulk_data();
+
+    stk::mesh::BulkData& bulk_data();
+    const stk::mesh::BulkData& bulk_data() const;
+    stk::mesh::MetaData& meta_data();
+    const stk::mesh::MetaData& meta_data() const;
 
     void initialize();
 
@@ -75,8 +81,10 @@ private:
     void init_vars();
 
     stk::ParallelMachine comm_;
-    stk::mesh::MetaData meta_;
-    stk::mesh::BulkData bulk_;
+    //stk::mesh::MetaData meta_;
+    //stk::mesh::BulkData bulk_;
+    std::shared_ptr<stk::mesh::BulkData> bulkData_;
+    stk::mesh::MeshBuilder meshBuilder_;
     stk::io::StkMeshIoBroker stkio_;
 
     std::unique_ptr<TiogaSTKIface> tg_;

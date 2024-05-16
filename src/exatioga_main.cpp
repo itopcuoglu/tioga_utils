@@ -20,14 +20,13 @@ void print_configuration()
     char hostname[MPI_MAX_PROCESSOR_NAME];
     int len;
     MPI_Get_processor_name(hostname, &len);
-    amrex::Print() << "\nRun configuration: "
-                   << "Num. MPI ranks = " << nprocs << std::endl;
+    amrex::Print() << "\nRun configuration: " << "Num. MPI ranks = " << nprocs
+                   << std::endl;
 #ifdef AMREX_USE_CUDA
 #if defined(CUDA_VERSION)
-    amrex::Print() << "CUDA configuration: "
-                   << "CUDA_VERSION: " << CUDA_VERSION << " "
-                   << CUDA_VERSION / 1000 << "." << (CUDA_VERSION % 1000) / 10
-                   << std::endl;
+    amrex::Print() << "CUDA configuration: " << "CUDA_VERSION: " << CUDA_VERSION
+                   << " " << CUDA_VERSION / 1000 << "."
+                   << (CUDA_VERSION % 1000) / 10 << std::endl;
 #endif
     std::ostringstream buf;
 

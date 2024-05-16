@@ -108,8 +108,8 @@ void TiogaSTKIface::initialize()
     }
 
     {
-        auto* nodal_vol = meta_.get_field<double>(
-            stk::topology::NODE_RANK, "nodal_volume");
+        auto* nodal_vol =
+            meta_.get_field<double>(stk::topology::NODE_RANK, "nodal_volume");
         stk::mesh::parallel_max(bulk_, {nodal_vol});
     }
 

@@ -11,6 +11,7 @@ StkIface::StkIface(stk::ParallelMachine& comm)
 {
 	meshBuilder_.set_aura_option(stk::mesh::BulkData::NO_AUTO_AURA);
 	bulkData_=meshBuilder_.create();
+	bulkData_->mesh_meta_data().use_simple_fields();
 }
 
 void StkIface::load(const YAML::Node& node)
@@ -58,7 +59,7 @@ void StkIface::setup()
     tg_->setup();
 
     if (num_vars() > 0) {
-        auto& qvar = meta_data().declare_field<GenericFieldType>(
+        auto& qvar = meta_data().declare_field<double>(
             stk::topology::NODE_RANK, "qvars");
         stk::mesh::put_field_on_mesh(
             qvar, meta_data().universal_part(), num_vars(), nullptr);
@@ -107,13 +108,13 @@ size_t StkIface::write_outputs(const YAML::Node& node, const double time)
     bool has_motion = false;
     if (node["motion_info"]) has_motion = true;
 
-    auto* cell_vol = meta_data().get_field<ScalarFieldType>(
+    auto* cell_vol = meta_data().get_field<double>(
         stk::topology::ELEM_RANK, "cell_volume");
-    auto* nodal_vol = meta_data().get_field<ScalarFieldType>(
+    auto* nodal_vol = meta_data().get_field<double>(
         stk::topology::NODE_RANK, "nodal_volume");
     ScalarFieldType* ibf =
-        meta_data().get_field<ScalarFieldType>(stk::topology::NODE_RANK, "iblank");
-    ScalarFieldType* ibcell = meta_data().get_field<ScalarFieldType>(
+        meta_data().get_field<double>(stk::topology::NODE_RANK, "iblank");
+    ScalarFieldType* ibcell = meta_data().get_field<double>(
         stk::topology::ELEM_RANK, "iblank_cell");
 
     std::string out_mesh = node["output_mesh"].as<std::string>();
@@ -132,7 +133,7 @@ size_t StkIface::write_outputs(const YAML::Node& node, const double time)
     }
 
     if (num_vars() > 0) {
-        auto* qvars = meta_data().get_field<GenericFieldType>(
+        auto* qvars = meta_data().get_field<double>(
             stk::topology::NODE_RANK, "qvars");
         stkio_.add_field(fh, *qvars);
     }
@@ -164,10 +165,10 @@ void StkIface::init_vars()
 {
     auto tmon = tioga_nalu::get_timer("TiogaAMRIface::init_vars");
 
-    auto* coords = meta_data().get_field<VectorFieldType>(
+    auto* coords = meta_data().get_field<double>(
         stk::topology::NODE_RANK, coordinates_name());
     auto* qvars =
-        meta_data().get_field<GenericFieldType>(stk::topology::NODE_RANK, "qvars");
+        meta_data().get_field<double>(stk::topology::NODE_RANK, "qvars");
     const stk::mesh::Selector sel = stk::mesh::selectField(*qvars);
     const auto& bkts = bulk_data().get_buckets(stk::topology::NODE_RANK, sel);
 

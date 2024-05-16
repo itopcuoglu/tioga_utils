@@ -108,7 +108,7 @@ void TiogaSTKIface::initialize()
     }
 
     {
-        auto* nodal_vol = meta_.get_field<ScalarFieldType>(
+        auto* nodal_vol = meta_.get_field<double>(
             stk::topology::NODE_RANK, "nodal_volume");
         stk::mesh::parallel_max(bulk_, {nodal_vol});
     }
@@ -500,7 +500,7 @@ void TiogaSTKIface::post_connectivity_work()
 
     // Synchronize IBLANK data for shared nodes
     ScalarFieldType* ibf =
-        meta_.get_field<ScalarFieldType>(stk::topology::NODE_RANK, "iblank");
+        meta_.get_field<double>(stk::topology::NODE_RANK, "iblank");
     std::vector<const stk::mesh::FieldBase*> pvec{ibf};
     stk::mesh::copy_owned_to_shared(bulk_, pvec);
 }

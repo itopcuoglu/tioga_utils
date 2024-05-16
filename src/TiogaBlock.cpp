@@ -81,16 +81,16 @@ void TiogaBlock::setup()
 
     if (ovsetNames_.size() > 0) names_to_parts(ovsetNames_, ovsetParts_);
 
-    ScalarFieldType& nodeVol = meta_.declare_field<ScalarFieldType>(
+    ScalarFieldType& nodeVol = meta_.declare_field<double>(
         stk::topology::NODE_RANK, "nodal_volume");
 
-    ScalarFieldType& cellVol = meta_.declare_field<ScalarFieldType>(
+    ScalarFieldType& cellVol = meta_.declare_field<double>(
         stk::topology::ELEM_RANK, "cell_volume");
 
-    ScalarFieldType& ibf = meta_.declare_field<ScalarFieldType>(
+    ScalarFieldType& ibf = meta_.declare_field<double>(
         stk::topology::NODE_RANK, "iblank");
 
-    ScalarFieldType& ibcell = meta_.declare_field<ScalarFieldType>(
+    ScalarFieldType& ibcell = meta_.declare_field<double>(
         stk::topology::ELEM_RANK, "iblank_cell");
 
     for (auto p : blkParts_) {
@@ -124,7 +124,7 @@ void TiogaBlock::update_coords()
     const stk::mesh::BucketVector& mbkts =
         bulk_.get_buckets(stk::topology::NODE_RANK, mesh_selector);
     VectorFieldType* coords =
-        meta_.get_field<VectorFieldType>(stk::topology::NODE_RANK, coordsName_);
+        meta_.get_field<double>(stk::topology::NODE_RANK, coordsName_);
 
     auto& ngp_xyz = bdata_.xyz_.h_view;
     int ip = 0;
@@ -157,7 +157,7 @@ void TiogaBlock::update_connectivity()
 void TiogaBlock::update_iblanks()
 {
     ScalarFieldType* ibf =
-        meta_.get_field<ScalarFieldType>(stk::topology::NODE_RANK, "iblank");
+        meta_.get_field<double>(stk::topology::NODE_RANK, "iblank");
     ibf->sync_to_device();
     auto timeMon = get_timer("TiogaBlock::update_iblanks");
 
@@ -205,7 +205,7 @@ void TiogaBlock::update_iblanks()
 
 void TiogaBlock::update_iblank_cell()
 {
-    ScalarFieldType* ibf = meta_.get_field<ScalarFieldType>(
+    ScalarFieldType* ibf = meta_.get_field<double>(
         stk::topology::ELEM_RANK, "iblank_cell");
     auto timeMon = get_timer("TiogaBlock::update_iblank_cell");
 
@@ -301,7 +301,7 @@ void TiogaBlock::process_nodes()
     const stk::mesh::BucketVector& mbkts =
         bulk_.get_buckets(stk::topology::NODE_RANK, mesh_selector);
     VectorFieldType* coords =
-        meta_.get_field<VectorFieldType>(stk::topology::NODE_RANK, coordsName_);
+        meta_.get_field<double>(stk::topology::NODE_RANK, coordsName_);
 
     int ncount = 0;
     for (auto b : mbkts) ncount += b->size();
@@ -503,9 +503,9 @@ void TiogaBlock::compute_volumes()
     auto& nc = bdata_.num_cells_.h_view;
     auto connect = bdata_.connect_;
 
-    auto* nodal_vol = meta_.get_field<ScalarFieldType>(
+    auto* nodal_vol = meta_.get_field<double>(
         stk::topology::NODE_RANK, "nodal_volume");
-    auto* cell_vol = meta_.get_field<ScalarFieldType>(
+    auto* cell_vol = meta_.get_field<double>(
         stk::topology::ELEM_RANK, "cell_volume");
     stk::mesh::field_fill(0.0, *nodal_vol);
 
@@ -575,7 +575,7 @@ void TiogaBlock::adjust_node_resolutions()
         (meta_.locally_owned_part() | meta_.globally_shared_part());
     const stk::mesh::BucketVector& mbkts =
         bulk_.get_buckets(stk::topology::NODE_RANK, sel);
-    auto* nodal_vol = meta_.get_field<ScalarFieldType>(
+    auto* nodal_vol = meta_.get_field<double>(
         stk::topology::NODE_RANK, "nodal_volume");
 
     auto& eidmap = bdata_.eid_map_.h_view;
@@ -607,9 +607,9 @@ void TiogaBlock::adjust_cell_resolutions()
         (meta_.locally_owned_part() | meta_.globally_shared_part());
     const stk::mesh::BucketVector& mbkts =
         bulk_.get_buckets(meta_.side_rank(), sel);
-    auto* nodal_vol = meta_.get_field<ScalarFieldType>(
+    auto* nodal_vol = meta_.get_field<double>(
         stk::topology::NODE_RANK, "nodal_volume");
-    auto* cell_vol = meta_.get_field<ScalarFieldType>(
+    auto* cell_vol = meta_.get_field<double>(
         stk::topology::ELEM_RANK, "cell_volume");
 
     size_t counter[2] = {0, 0};
@@ -758,7 +758,7 @@ void TiogaBlock::register_solution(
     auto& qsolarr = qsol.h_view;
 
     auto* qvars =
-        meta_.get_field<GenericFieldType>(stk::topology::NODE_RANK, "qvars");
+        meta_.get_field<double>(stk::topology::NODE_RANK, "qvars");
     stk::mesh::Selector sel =
         stk::mesh::selectUnion(blkParts_) &
         (meta_.locally_owned_part() | meta_.globally_shared_part());
@@ -792,7 +792,7 @@ double TiogaBlock::update_solution(const int nvars)
 
     auto& qsolarr = bdata_.qsol_.h_view;
     auto* qvars =
-        meta_.get_field<GenericFieldType>(stk::topology::NODE_RANK, "qvars");
+        meta_.get_field<double>(stk::topology::NODE_RANK, "qvars");
     stk::mesh::Selector sel =
         stk::mesh::selectUnion(blkParts_) &
         (meta_.locally_owned_part() | meta_.globally_shared_part());

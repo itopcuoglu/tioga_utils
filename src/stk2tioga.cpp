@@ -10,6 +10,7 @@
 #include <stk_mesh/base/FindRestriction.hpp>
 #include <stk_mesh/base/MetaData.hpp>
 #include <stk_mesh/base/BulkData.hpp>
+#include <stk_mesh/base/MeshBuilder.hpp>
 #include <stk_mesh/base/Entity.hpp>
 #include <stk_mesh/base/Field.hpp>
 #include <stk_mesh/base/CoordinateSystems.hpp>
@@ -179,9 +180,14 @@ int main(int argc, char** argv)
         auto timerTotal = tioga_nalu::get_timer("stk2tioga::zz_total_time");
         int iproc = stk::parallel_machine_rank(comm);
         int nproc = stk::parallel_machine_size(comm);
-        stk::mesh::MetaData meta;
-        stk::mesh::BulkData bulk(meta, comm, stk::mesh::BulkData::NO_AUTO_AURA);
+	std::shared_ptr<stk::mesh::BulkData> bulkData; 
+	stk::mesh::MeshBuilder meshBuilder;
+	meshBuilder.set_aura_option(stk::mesh::BulkData::NO_AUTO_AURA);
+	bulkData=meshBuilder.create();
+	bulkData->mesh_meta_data().use_simple_fields();
 
+	stk::mesh::BulkData& bulk=*bulkData;
+	stk::mesh::MetaData& meta=bulkData->mesh_meta_data();
         std::string yaml_filename;
         if (argc == 2) {
             yaml_filename = argv[1];

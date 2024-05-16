@@ -16,17 +16,19 @@ void MotionBase::setup()
             partVec_.push_back(part);
     }
 
-    VectorFieldType& coordinates = meta_.declare_field<VectorFieldType>(
-        stk::topology::NODE_RANK, "coordinates");
-    VectorFieldType& current_coordinates = meta_.declare_field<VectorFieldType>(
+    VectorFieldType& coordinates =
+        meta_.declare_field<double>(stk::topology::NODE_RANK, "coordinates");
+    VectorFieldType& current_coordinates = meta_.declare_field<double>(
         stk::topology::NODE_RANK, "current_coordinates");
-    VectorFieldType& mesh_displacement = meta_.declare_field<VectorFieldType>(
+    VectorFieldType& mesh_displacement = meta_.declare_field<double>(
         stk::topology::NODE_RANK, "mesh_displacement");
+    int fieldSize = 3;
 
     for (auto* p : partVec_) {
-        stk::mesh::put_field_on_mesh(coordinates, *p, nullptr);
-        stk::mesh::put_field_on_mesh(current_coordinates, *p, nullptr);
-        stk::mesh::put_field_on_mesh(mesh_displacement, *p, nullptr);
+        stk::mesh::put_field_on_mesh(coordinates, *p, fieldSize, nullptr);
+        stk::mesh::put_field_on_mesh(
+            current_coordinates, *p, fieldSize, nullptr);
+        stk::mesh::put_field_on_mesh(mesh_displacement, *p, fieldSize, nullptr);
     }
 }
 

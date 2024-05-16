@@ -44,18 +44,19 @@ void MeshMotion::load(const YAML::Node& node)
 
 void MeshMotion::setup()
 {
-    VectorFieldType& coordinates = meta_.declare_field<VectorFieldType>(
-        stk::topology::NODE_RANK, "coordinates");
-    VectorFieldType& current_coordinates = meta_.declare_field<VectorFieldType>(
+    VectorFieldType& coordinates =
+        meta_.declare_field<double>(stk::topology::NODE_RANK, "coordinates");
+    VectorFieldType& current_coordinates = meta_.declare_field<double>(
         stk::topology::NODE_RANK, "current_coordinates");
-    VectorFieldType& mesh_displacement = meta_.declare_field<VectorFieldType>(
+    VectorFieldType& mesh_displacement = meta_.declare_field<double>(
         stk::topology::NODE_RANK, "mesh_displacement");
-
-    stk::mesh::put_field_on_mesh(coordinates, meta_.universal_part(), nullptr);
+    int fieldSize = 3;
     stk::mesh::put_field_on_mesh(
-        current_coordinates, meta_.universal_part(), nullptr);
+        coordinates, meta_.universal_part(), fieldSize, nullptr);
     stk::mesh::put_field_on_mesh(
-        mesh_displacement, meta_.universal_part(), nullptr);
+        current_coordinates, meta_.universal_part(), fieldSize, nullptr);
+    stk::mesh::put_field_on_mesh(
+        mesh_displacement, meta_.universal_part(), fieldSize, nullptr);
 
     for (auto& mm : meshMotionVec_) mm->setup();
 }
@@ -78,9 +79,9 @@ void MeshMotion::execute(const int istep)
 void MeshMotion::init_coordinates()
 {
     const int ndim = meta_.spatial_dimension();
-    VectorFieldType* modelCoords = meta_.get_field<VectorFieldType>(
-        stk::topology::NODE_RANK, "coordinates");
-    VectorFieldType* currCoords = meta_.get_field<VectorFieldType>(
+    VectorFieldType* modelCoords =
+        meta_.get_field<double>(stk::topology::NODE_RANK, "coordinates");
+    VectorFieldType* currCoords = meta_.get_field<double>(
         stk::topology::NODE_RANK, "current_coordinates");
 
     stk::mesh::Selector sel = meta_.universal_part();

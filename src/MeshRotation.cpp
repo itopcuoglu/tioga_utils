@@ -42,12 +42,12 @@ void MeshRotation::execute(double current_time) { rotate_mesh(current_time); }
 void MeshRotation::rotate_mesh(double current_time)
 {
     const int ndim = meta_.spatial_dimension();
-    VectorFieldType* modelCoords = meta_.get_field<VectorFieldType>(
-        stk::topology::NODE_RANK, "coordinates");
-    VectorFieldType* currCoords = meta_.get_field<VectorFieldType>(
+    VectorFieldType* modelCoords =
+        meta_.get_field<double>(stk::topology::NODE_RANK, "coordinates");
+    VectorFieldType* currCoords = meta_.get_field<double>(
         stk::topology::NODE_RANK, "current_coordinates");
-    VectorFieldType* displacement = meta_.get_field<VectorFieldType>(
-        stk::topology::NODE_RANK, "mesh_displacement");
+    VectorFieldType* displacement =
+        meta_.get_field<double>(stk::topology::NODE_RANK, "mesh_displacement");
 
     stk::mesh::Selector sel = stk::mesh::selectUnion(partVec_);
     const auto& bkts = bulk_.get_buckets(stk::topology::NODE_RANK, sel);

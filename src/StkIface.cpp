@@ -5,13 +5,11 @@
 namespace tioga_nalu {
 
 StkIface::StkIface(stk::ParallelMachine& comm)
-    : comm_(comm)
-    , meshBuilder_(comm)
-    , stkio_(comm)
+    : comm_(comm), meshBuilder_(comm), stkio_(comm)
 {
-	meshBuilder_.set_aura_option(stk::mesh::BulkData::NO_AUTO_AURA);
-	bulkData_=meshBuilder_.create();
-	bulkData_->mesh_meta_data().use_simple_fields();
+    meshBuilder_.set_aura_option(stk::mesh::BulkData::NO_AUTO_AURA);
+    bulkData_ = meshBuilder_.create();
+    bulkData_->mesh_meta_data().use_simple_fields();
 }
 
 void StkIface::load(const YAML::Node& node)
@@ -46,7 +44,8 @@ void StkIface::load(const YAML::Node& node)
     }
 
     const auto& oset_info = node["overset_info"];
-    tg_.reset(new TiogaSTKIface(meta_data(), bulk_data(), oset_info, coordinates_name()));
+    tg_.reset(new TiogaSTKIface(
+        meta_data(), bulk_data(), oset_info, coordinates_name()));
 }
 
 void StkIface::setup()
@@ -108,14 +107,14 @@ size_t StkIface::write_outputs(const YAML::Node& node, const double time)
     bool has_motion = false;
     if (node["motion_info"]) has_motion = true;
 
-    auto* cell_vol = meta_data().get_field<double>(
-        stk::topology::ELEM_RANK, "cell_volume");
-    auto* nodal_vol = meta_data().get_field<double>(
-        stk::topology::NODE_RANK, "nodal_volume");
+    auto* cell_vol =
+        meta_data().get_field<double>(stk::topology::ELEM_RANK, "cell_volume");
+    auto* nodal_vol =
+        meta_data().get_field<double>(stk::topology::NODE_RANK, "nodal_volume");
     ScalarFieldType* ibf =
         meta_data().get_field<double>(stk::topology::NODE_RANK, "iblank");
-    ScalarFieldType* ibcell = meta_data().get_field<double>(
-        stk::topology::ELEM_RANK, "iblank_cell");
+    ScalarFieldType* ibcell =
+        meta_data().get_field<double>(stk::topology::ELEM_RANK, "iblank_cell");
 
     std::string out_mesh = node["output_mesh"].as<std::string>();
     if (bulk_data().parallel_rank() == 0)
@@ -127,14 +126,14 @@ size_t StkIface::write_outputs(const YAML::Node& node, const double time)
     stkio_.add_field(fh, *ibcell);
 
     if (has_motion) {
-        VectorFieldType* mesh_disp = meta_data().get_field<VectorFieldType>(
+        VectorFieldType* mesh_disp = meta_data().get_field<double>(
             stk::topology::NODE_RANK, "mesh_displacement");
         stkio_.add_field(fh, *mesh_disp);
     }
 
     if (num_vars() > 0) {
-        auto* qvars = meta_data().get_field<double>(
-            stk::topology::NODE_RANK, "qvars");
+        auto* qvars =
+            meta_data().get_field<double>(stk::topology::NODE_RANK, "qvars");
         stkio_.add_field(fh, *qvars);
     }
 
@@ -207,28 +206,18 @@ bool StkIface::get_hole_map_algorithm()
 
 int StkIface::get_composite_num() { return tg_->get_composite_num(); }
 
-stk::mesh::BulkData&
-StkIface::bulk_data()
+stk::mesh::BulkData& StkIface::bulk_data() { return *bulkData_; }
+
+const stk::mesh::BulkData& StkIface::bulk_data() const { return *bulkData_; }
+
+stk::mesh::MetaData& StkIface::meta_data()
 {
-return *bulkData_;
+    return bulkData_->mesh_meta_data();
 }
 
-const stk::mesh::BulkData&
-StkIface::bulk_data() const
+const stk::mesh::MetaData& StkIface::meta_data() const
 {
-return *bulkData_;
-}
-
-stk::mesh::MetaData&
-StkIface::meta_data()
-{
-return bulkData_->mesh_meta_data();
-}
-
-const stk::mesh::MetaData&
-StkIface::meta_data() const
-{
-return bulkData_->mesh_meta_data();
+    return bulkData_->mesh_meta_data();
 }
 
 } // namespace tioga_nalu

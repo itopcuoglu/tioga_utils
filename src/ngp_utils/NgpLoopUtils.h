@@ -43,7 +43,7 @@ void run_entity_algorithm(
             Kokkos::parallel_for(
                 Kokkos::TeamThreadRange(team, bktLen),
                 [&](const size_t& bktIndex) {
-                    MeshIndex meshIdx{&bkt, static_cast<unsigned>(bktIndex)};
+                    MeshIndex meshIdx{bktId, static_cast<unsigned>(bktIndex)};
                     algorithm(meshIdx);
                 });
         });
@@ -92,7 +92,7 @@ void run_entity_par_reduce(
             Kokkos::parallel_reduce(
                 Kokkos::TeamThreadRange(team, bktLen),
                 [&](const size_t& bktIndex, ReducerType& threadVal) {
-                    MeshIndex meshIdx{&bkt, static_cast<unsigned>(bktIndex)};
+                    MeshIndex meshIdx{bktId, static_cast<unsigned>(bktIndex)};
                     algorithm(meshIdx, threadVal);
                 },
                 bktVal);
@@ -133,7 +133,7 @@ void run_entity_par_reduce(
             Kokkos::parallel_reduce(
                 Kokkos::TeamThreadRange(team, bktLen),
                 [&](const size_t& bktIndex, value_type& threadVal) {
-                    MeshIndex meshIdx{&bkt, static_cast<unsigned>(bktIndex)};
+                    MeshIndex meshIdx{bktId, static_cast<unsigned>(bktIndex)};
                     algorithm(meshIdx, threadVal);
                 },
                 ReducerType(bktVal));

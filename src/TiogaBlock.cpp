@@ -172,13 +172,13 @@ void TiogaBlock::update_iblanks()
     auto& iblarr = bdata_.iblank_.d_view;
     auto& nidmap = bdata_.eid_map_.d_view;
     auto& iblank_ngp = stk::mesh::get_updated_ngp_field<double>(*ibf);
+    const auto& ngpMesh = stk::mesh::get_updated_ngp_mesh(bulk_);
     ngp::run_entity_par_reduce(
-        "update_iblanks", stk::mesh::get_updated_ngp_mesh(bulk_),
-        stk::topology::NODE_RANK, mesh_selector,
+        "update_iblanks", ngpMesh, stk::topology::NODE_RANK, mesh_selector,
         KOKKOS_LAMBDA(
             const typename Traits::MeshIndex& mi,
             typename CounterType::value_type& pctr) {
-            auto node = (*mi.bucket)[mi.bucketOrd];
+            auto node = ngpMesh.get_entity(stk::topology::NODE_RANK, mi);
             const auto idx = nidmap(node.local_offset()) - 1;
             const auto ibval = iblarr(idx);
             iblank_ngp.get(mi, 0) = ibval;
@@ -216,11 +216,11 @@ void TiogaBlock::update_iblank_cell()
     auto& iblarr = bdata_.iblank_cell_.d_view;
     auto& eidmap = bdata_.eid_map_.d_view;
     auto& iblank_ngp = stk::mesh::get_updated_ngp_field<double>(*ibf);
+    const auto& ngpMesh = stk::mesh::get_updated_ngp_mesh(bulk_);
     ngp::run_entity_algorithm(
-        "update_iblanks", stk::mesh::get_updated_ngp_mesh(bulk_),
-        stk::topology::ELEM_RANK, mesh_selector,
+        "update_iblanks", ngpMesh, stk::topology::ELEM_RANK, mesh_selector,
         KOKKOS_LAMBDA(const typename Traits::MeshIndex& mi) {
-            auto elem = (*mi.bucket)[mi.bucketOrd];
+            auto elem = ngpMesh.get_entity(stk::topology::ELEM_RANK, mi);
             const auto idx = eidmap(elem.local_offset()) - 1;
             iblank_ngp.get(mi, 0) = iblarr(idx);
         });

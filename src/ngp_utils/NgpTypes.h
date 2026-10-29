@@ -29,7 +29,7 @@ template <typename T, typename Layout = MemLayout, typename Space = MemSpace>
 struct NgpDualArray
 {
     using ArrayType = NgpArray<T, Layout, Space>;
-    using HostArrayType = typename ArrayType::HostMirror;
+    using HostArrayType = typename ArrayType::host_mirror_type;
 
     ArrayType d_view;
     HostArrayType h_view;

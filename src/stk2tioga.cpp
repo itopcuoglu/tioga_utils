@@ -28,7 +28,7 @@
 #include "Timer.h"
 #include "tioga.h"
 
-typedef stk::mesh::Field<double, stk::mesh::Cartesian> VectorFieldType;
+typedef stk::mesh::Field<double> VectorFieldType;
 typedef stk::mesh::Field<double> ScalarFieldType;
 
 const double pi = std::acos(-1.0);
@@ -69,9 +69,9 @@ void tag_procs(stk::mesh::MetaData& meta, stk::mesh::BulkData& bulk)
 {
     int iproc = bulk.parallel_rank();
     ScalarFieldType* ipnode =
-        meta.get_field<ScalarFieldType>(stk::topology::NODE_RANK, "pid_node");
+        meta.get_field<double>(stk::topology::NODE_RANK, "pid_node");
     ScalarFieldType* ipelem =
-        meta.get_field<ScalarFieldType>(stk::topology::ELEM_RANK, "pid_elem");
+        meta.get_field<double>(stk::topology::ELEM_RANK, "pid_elem");
 
     stk::mesh::Selector msel = meta.locally_owned_part();
     const stk::mesh::BucketVector& nbkts =
@@ -101,7 +101,7 @@ void tag_procs(stk::mesh::MetaData& meta, stk::mesh::BulkData& bulk)
 void move_mesh(stk::mesh::MetaData& meta, stk::mesh::BulkData& bulk)
 {
     double omega = 4.0 * 6.81041368647038;
-    VectorFieldType* coords = meta.get_field<VectorFieldType>(
+    VectorFieldType* coords = meta.get_field<double>(
         stk::topology::NODE_RANK, "coordinates");
 
     stk::mesh::PartVector pvec(6);
@@ -141,13 +141,13 @@ void write_mesh(
 
     tag_procs(meta, bulk);
     ScalarFieldType* ibf =
-        meta.get_field<ScalarFieldType>(stk::topology::NODE_RANK, "iblank");
-    ScalarFieldType* ibcell = meta.get_field<ScalarFieldType>(
+        meta.get_field<double>(stk::topology::NODE_RANK, "iblank");
+    ScalarFieldType* ibcell = meta.get_field<double>(
         stk::topology::ELEM_RANK, "iblank_cell");
     ScalarFieldType* ipnode =
-        meta.get_field<ScalarFieldType>(stk::topology::NODE_RANK, "pid_node");
+        meta.get_field<double>(stk::topology::NODE_RANK, "pid_node");
     ScalarFieldType* ipelem =
-        meta.get_field<ScalarFieldType>(stk::topology::ELEM_RANK, "pid_elem");
+        meta.get_field<double>(stk::topology::ELEM_RANK, "pid_elem");
 
     std::string out_mesh = inpfile["output_mesh"].as<std::string>();
     if (bulk.parallel_rank() == 0)
@@ -159,7 +159,7 @@ void write_mesh(
     stkio.add_field(fh, *ipelem);
 
     if (has_motion) {
-        VectorFieldType* mesh_disp = meta.get_field<VectorFieldType>(
+        VectorFieldType* mesh_disp = meta.get_field<double>(
             stk::topology::NODE_RANK, "mesh_displacement");
         stkio.add_field(fh, *mesh_disp);
     }
@@ -235,9 +235,9 @@ int main(int argc, char** argv)
         if (has_motion) mesh_motion->setup();
         tg.setup();
 
-        ScalarFieldType& ipnode = meta.declare_field<ScalarFieldType>(
+        ScalarFieldType& ipnode = meta.declare_field<double>(
             stk::topology::NODE_RANK, "pid_node");
-        ScalarFieldType& ipelem = meta.declare_field<ScalarFieldType>(
+        ScalarFieldType& ipelem = meta.declare_field<double>(
             stk::topology::ELEM_RANK, "pid_elem");
         stk::mesh::put_field_on_mesh(ipnode, meta.universal_part(), nullptr);
         stk::mesh::put_field_on_mesh(ipelem, meta.universal_part(), nullptr);

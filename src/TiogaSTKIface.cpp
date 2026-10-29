@@ -151,7 +151,7 @@ void TiogaSTKIface::execute()
 
     // Synchronize IBLANK data for shared nodes
     ScalarFieldType* ibf =
-        meta_.get_field<ScalarFieldType>(stk::topology::NODE_RANK, "iblank");
+        meta_.get_field<double>(stk::topology::NODE_RANK, "iblank");
     std::vector<const stk::mesh::FieldBase*> pvec{ibf};
     stk::mesh::copy_owned_to_shared(bulk_, pvec);
 
@@ -247,7 +247,7 @@ void TiogaSTKIface::check_soln_norm()
 void TiogaSTKIface::get_receptor_info()
 {
     ScalarFieldType* ibf =
-        meta_.get_field<ScalarFieldType>(stk::topology::NODE_RANK, "iblank");
+        meta_.get_field<double>(stk::topology::NODE_RANK, "iblank");
     auto timeMon = get_timer("TiogaSTKIface::get_receptor_info");
 
     std::vector<unsigned long> nodesToReset;
@@ -379,7 +379,7 @@ void TiogaSTKIface::populate_overset_info()
     std::vector<double> elemCoords;
 
     VectorFieldType* coords =
-        meta_.get_field<VectorFieldType>(stk::topology::NODE_RANK, coordsName_);
+        meta_.get_field<double>(stk::topology::NODE_RANK, coordsName_);
 
     size_t numReceptors = receptorIDs_.size();
     for (size_t i = 0; i < numReceptors; i++) {
